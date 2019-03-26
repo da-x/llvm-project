@@ -58,6 +58,7 @@ add_clang_library(clangAST
   PrintfFormatString.cpp
   QualTypeNames.cpp
   RawCommentList.cpp
+  RecordFieldReorganizer.cpp
   RecordLayout.cpp
   RecordLayoutBuilder.cpp
   ScanfFormatString.cpp
