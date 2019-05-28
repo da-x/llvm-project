@@ -4472,6 +4472,12 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
     CmdArgs.push_back(A->getValue(0));
   }
 
+  // -randstruct-seed parent process
+  if (Arg *A = Args.getLastArg(options::OPT_randstruct_seed_filename_EQ)) {
+    CmdArgs.push_back( "-randstruct-seed-filename" );
+    CmdArgs.push_back(A->getValue(0));
+  }
+
   if (Arg *A = Args.getLastArg(options::OPT_randstruct_auto)) {
     CmdArgs.push_back( "-randstruct-auto" );
   }

@@ -91,6 +91,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <fstream>
 
 using namespace clang;
 using namespace driver;
@@ -1736,6 +1737,15 @@ static InputKind ParseFrontendArgs(FrontendOptions &Opts, ArgList &Args,
   // child process handle arguments
   if (const Arg* A = Args.getLastArg(OPT_randstruct_seed)) {
     RandstructSeed = A->getValue(0);
+  }
+  if (const Arg* A = Args.getLastArg(OPT_randstruct_seed_filename)) {
+    std::string seed_filename = A->getValue(0);
+    std::ifstream seed_file(seed_filename.c_str());
+    if (!seed_file.is_open()) {
+	Diags.Report(diag::err_drv_cannot_open_randstruct_seed_filename)
+	    << A->getValue(0);
+    }
+    std::getline(seed_file, RandstructSeed);
   }
   if (const Arg* A = Args.getLastArg(OPT_randstruct_auto)) {
     RandstructAutoSelect = true;

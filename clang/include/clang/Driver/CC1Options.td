@@ -446,6 +446,8 @@ def fmessage_length : Separate<["-"], "fmessage-length">, MetaVarName<"<N>">,
   HelpText<"Format message diagnostics so that they fit within N columns or fewer, when possible.">;
 def randstruct_seed : Separate<["-"], "randstruct-seed">, MetaVarName<"<N>">,
   HelpText<"Randomization seed for random struct layouts">;
+def randstruct_seed_filename : Separate<["-"], "randstruct-seed-filename">,
+  HelpText<"Optional file containing randomization seed for random struct layouts">;
 def verify_EQ : CommaJoined<["-"], "verify=">,
   MetaVarName<"<prefixes>">,
   HelpText<"Verify diagnostic output using comment directives that start with"
