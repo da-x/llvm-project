@@ -34,9 +34,16 @@ void RecordFieldReorganizer::reorganizeFields(const ASTContext &C,
   std::set<Decl *> mutateGuard;
 
   SmallVector<Decl *, 64> fields;
-  for (auto f : D->fields()) {
-    mutateGuard.insert(f);
-    fields.push_back(f);
+  SmallVector<Decl *, 64> other_decls;
+
+  for (auto d : D->decls()) {
+    auto f = dyn_cast<FieldDecl>(d);
+    if (f != nullptr) {
+      mutateGuard.insert(f);
+      fields.push_back(f);
+    } else {
+      other_decls.push_back(d);
+    }
   }
   // Now allow subclass implementations to reorder the fields
   reorganize(C, D, fields);
@@ -50,7 +57,11 @@ void RecordFieldReorganizer::reorganizeFields(const ASTContext &C,
            "Unknown field encountered after reorganization");
   }
 
-  commit(D, fields);
+  SmallVector<Decl *, 64> new_decl_list(fields);
+  for (auto d: other_decls) {
+      new_decl_list.push_back(d);
+  }
+  commit(D, new_decl_list);
 }
 void RecordFieldReorganizer::commit(
     const RecordDecl *D, SmallVectorImpl<Decl *> &NewFieldOrder) const {
