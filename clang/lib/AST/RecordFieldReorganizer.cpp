@@ -35,6 +35,7 @@ void RecordFieldReorganizer::reorganizeFields(const ASTContext &C,
 
   SmallVector<Decl *, 64> fields;
   SmallVector<Decl *, 64> other_decls;
+  Decl *flex_array = nullptr;
 
   for (auto d : D->decls()) {
     auto f = dyn_cast<FieldDecl>(d);
@@ -45,8 +46,17 @@ void RecordFieldReorganizer::reorganizeFields(const ASTContext &C,
       other_decls.push_back(d);
     }
   }
+
+  if (D->hasFlexibleArrayMember()) {
+    flex_array = fields.pop_back_val();
+  }
+
   // Now allow subclass implementations to reorder the fields
   reorganize(C, D, fields);
+
+  if (flex_array) {
+      fields.push_back(flex_array);
+  }
 
   // Assert all fields are still present
   assert(mutateGuard.size() == fields.size() &&
