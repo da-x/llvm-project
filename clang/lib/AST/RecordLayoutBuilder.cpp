@@ -3060,7 +3060,13 @@ ASTContext::getASTRecordLayout(const RecordDecl *D) const {
   }
 
   if (!NotToBeRandomized && (ShouldBeRandomized || AutoSelectable)) {
-    Randstruct randstruct(RandstructSeed);
+    SmallString<1024> Name;
+    llvm::raw_svector_ostream Out(Name);
+    Out << RandstructSeed;
+    Out << ":";
+    D->printQualifiedName(Out);
+
+    Randstruct randstruct(Name.c_str());
     randstruct.reorganizeFields(*this,D);
   }
 
