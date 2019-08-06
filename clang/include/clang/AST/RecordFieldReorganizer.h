@@ -19,6 +19,8 @@
 #include "Decl.h"
 #include <random>
 
+#include "clang/Analysis/AnalysisDeclContext.h"
+
 namespace clang {
 
 // FIXME: Find a better alternative to SmallVector with hardcoded size!
@@ -53,6 +55,9 @@ private:
   std::seed_seq Seq;
   std::default_random_engine rng;
 };
+
+void checkForBadCasts(Sema &S, const Decl *D,
+		      const Stmt *Body, AnalysisDeclContext &AC);
 
 } // namespace clang
 

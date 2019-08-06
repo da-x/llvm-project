@@ -13,7 +13,10 @@
 
 #include "clang/AST/RecordFieldReorganizer.h"
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/ASTDiagnostic.h"
 #include "clang/AST/RandstructSeed.h"
+#include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/Sema/Sema.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -36,12 +39,15 @@ void RecordFieldReorganizer::reorganizeFields(const ASTContext &C,
   SmallVector<Decl *, 64> fields;
   SmallVector<Decl *, 64> other_decls;
   Decl *flex_array = nullptr;
+  unsigned int index = 1;
 
   for (auto d : D->decls()) {
     auto f = dyn_cast<FieldDecl>(d);
     if (f != nullptr) {
       mutateGuard.insert(f);
+      f->setOriginalFieldIndex(index);
       fields.push_back(f);
+      index += 1;
     } else {
       other_decls.push_back(d);
     }
@@ -275,4 +281,5 @@ bool Randstruct::isTriviallyRandomizable(const RecordDecl *D) {
   }
   return true;
 }
+
 } // namespace clang
