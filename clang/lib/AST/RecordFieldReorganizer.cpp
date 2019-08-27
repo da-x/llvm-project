@@ -40,10 +40,18 @@ void RecordFieldReorganizer::reorganizeFields(const ASTContext &C,
   SmallVector<Decl *, 64> other_decls;
   Decl *flex_array = nullptr;
   unsigned int index = 1;
+  bool last_is_zero_array = false;
 
   for (auto d : D->decls()) {
     auto f = dyn_cast<FieldDecl>(d);
     if (f != nullptr) {
+      if (f->getType()->isConstantArrayType()) {
+        last_is_zero_array =
+	    dyn_cast<ConstantArrayType>(f->getType())->getSize() == 0;
+      } else {
+        last_is_zero_array = false;
+      }
+
       mutateGuard.insert(f);
       f->setOriginalFieldIndex(index);
       fields.push_back(f);
@@ -53,7 +61,7 @@ void RecordFieldReorganizer::reorganizeFields(const ASTContext &C,
     }
   }
 
-  if (D->hasFlexibleArrayMember()) {
+  if (D->hasFlexibleArrayMember() || last_is_zero_array) {
     flex_array = fields.pop_back_val();
   }
 
